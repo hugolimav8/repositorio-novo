@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  web_app:
+    # O "build: ." avisa que o Docker deve gerar a imagem usando o Dockerfile da raiz
+    build: .
+    container_name: meu_servidor_web
+    ports:
+      - "8081:80"     # Porta para ver o index.html no navegador
+    restart: unless-stopped

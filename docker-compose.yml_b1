@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  web_app:
+    # Usando uma imagem que une Nginx + servidor SSH para permitir deploy remoto
+    image: linuxserver/nginx
+    container_name: meu_servidor_web
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      - PASSWORD=senha_secreta # Senha que o Jenkins vai usar para se conectar aqui
+    ports:
+      - "8081:80"     # Porta para ver o index.html no navegador
+      - "2222:22"     # Porta SSH que o Jenkins vai usar para enviar o arquivo
+    volumes:
+      - ./site-dados:/config/www
+    restart: unless-stopped
