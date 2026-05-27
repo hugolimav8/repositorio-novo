@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    // 👇 O BLOCO DE AUTOMATIZAÇÃO ENTRA AQUI
+    triggers {
+        githubPush()
+    }
+
     stages {
         stage('0. Baixar Binarios do Docker e Compose') {
             steps {
