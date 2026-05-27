@@ -2,6 +2,21 @@ pipeline {
     agent any
 
     stages {
+        stage('0. Baixar Binario do Docker') {
+            steps {
+                echo 'Baixando o executável do Docker de forma isolada...'
+                sh """
+                    if ! command -v docker &> /dev/null; then
+                        curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-26.1.3.tgz -o docker.tgz
+                        tar -xzvf docker.tgz
+                        mv docker/docker /usr/local/bin/
+                        mv docker/docker-compose /usr/local/bin/ || true
+                        rm -rf docker docker.tgz
+                    fi
+                """
+            }
+        }
+
         stage('1. Clonar Repositorio') {
             steps {
                 echo 'Baixando a versão mais recente do Git...'
@@ -10,17 +25,19 @@ pipeline {
 
         stage('2. Build da Imagem e Deploy') {
             steps {
-                echo 'Gerando nova imagem Docker e reiniciando o container na porta 8081...'
-                // O --build garante que a imagem antiga seja descartada e uma nova seja criada
-                sh 'docker compose up -d --build'
+                echo 'Gerando nova imagem Docker na porta 8081...'
+                sh """
+                    docker compose up -d --build
+                """
             }
         }
 
         stage('3. Limpeza de Imagens Antigas') {
             steps {
-                echo 'Limpando imagens antigas que ficaram sem tag (dangling)...'
-                // Evita que o disco da sua máquina Oracle lote com restos de builds antigos
-                sh 'docker image prune -f'
+                echo 'Limpando imagens antigas...'
+                sh """
+                    docker image prune -f
+                """
             }
         }
     }
