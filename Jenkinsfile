@@ -3,7 +3,7 @@ pipeline {
 
     // 👇 AGORA ELE CHECA A CADA MINUTO, MAS SÓ BUILDA SE TIVER COMMIT NOVO
     triggers {
-	pollSCM('0 22 * * *')
+	pollSCM('* * * * *')
     }
 
     stages {
