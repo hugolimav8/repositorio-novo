@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    // 👇 O BLOCO DE AUTOMATIZAÇÃO ENTRA AQUI
+    // 👇 CONFIGURAÇÃO PARA RODAR DE MINUTO EM MINUTO
     triggers {
-        githubPush()
+        cron('* * * * *')
     }
 
     stages {
@@ -24,8 +24,6 @@ pipeline {
                     if [ ! -f /usr/local/lib/docker/cli-plugins/docker-compose ]; then
                         curl -fsSL https://github.com/docker/compose/releases/download/v2.27.1/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
                         chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-                        
-                        # Cria um atalho global para garantir que o comando 'docker compose' funcione
                         ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose || true
                     fi
                 """
