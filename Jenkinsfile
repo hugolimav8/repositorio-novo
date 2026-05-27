@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    // 👇 CONFIGURAÇÃO PARA RODAR DE MINUTO EM MINUTO
+    // 👇 AGORA ELE CHECA A CADA MINUTO, MAS SÓ BUILDA SE TIVER COMMIT NOVO
     triggers {
-        cron('* * * * *')
+        pollSCM('* * * * *')
     }
 
     stages {
@@ -47,7 +47,7 @@ pipeline {
 
         stage('3. Limpeza de Imagens Antigas') {
             steps {
-                echo 'Limpando imagens antigas...'
+                echo 'Limpages imagens antigas...'
                 sh """
                     docker image prune -f
                 """
