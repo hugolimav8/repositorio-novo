@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-    // 👇 AGORA ELE CHECA A CADA MINUTO, MAS SÓ BUILDA SE TIVER COMMIT NOVO
+    // 👇 AGORA ELE CHECA A CADA UM MINUTO, MAS SÓ BUILDA SE TIVER COMMIT NOVO
     triggers {
 	pollSCM('* * * * *')
     }
