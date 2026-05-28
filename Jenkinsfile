@@ -1,9 +1,8 @@
 pipeline {
     agent any
 
-    // 👇 AGORA ELE CHECA A CADA UM MINUTO, MAS SÓ BUILDA SE TIVER COMMIT NOVO
     triggers {
-	pollSCM('* * * * *')
+        pollSCM('* * * * *')
     }
 
     stages {
@@ -11,7 +10,6 @@ pipeline {
             steps {
                 echo 'Baixando os executáveis de forma isolada...'
                 sh """
-                    # 1. Baixa e instala o cliente Docker tradicional
                     if ! command -v docker &> /dev/null; then
                         curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-26.1.3.tgz -o docker.tgz
                         tar -xzvf docker.tgz
@@ -19,7 +17,6 @@ pipeline {
                         rm -rf docker docker.tgz
                     fi
 
-                    # 2. Baixa e instala o plugin do Docker Compose v2
                     mkdir -p /usr/local/lib/docker/cli-plugins
                     if [ ! -f /usr/local/lib/docker/cli-plugins/docker-compose ]; then
                         curl -fsSL https://github.com/docker/compose/releases/download/v2.27.1/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
@@ -32,7 +29,9 @@ pipeline {
 
         stage('1. Clonar Repositorio') {
             steps {
-                echo 'Baixando a versão mais recente do Git...'
+                echo 'Baixando a versão correta do Git...'
+                // 👇 ISSO AQUI garante que o Jenkins baixe os arquivos (incluindo o index.html correto) do commit atual ou do rollback
+                checkout scm
             }
         }
 
@@ -40,14 +39,15 @@ pipeline {
             steps {
                 echo 'Gerando nova imagem Docker na porta 8081...'
                 sh """
-                    docker compose up -d --build
+                    # Adicionamos o --force-recreate para garantir que o container antigo caia e suba o novo com o index corrigido
+                    docker compose up -d --build --force-recreate
                 """
             }
         }
 
         stage('3. Limpeza de Imagens Antigas') {
             steps {
-                echo 'Limpages imagens antigas...'
+                echo 'Limpando imagens antigas...'
                 sh """
                     docker image prune -f
                 """
